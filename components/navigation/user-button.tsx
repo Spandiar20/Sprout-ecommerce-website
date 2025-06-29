@@ -1,0 +1,12 @@
+"use client"
+import { Session } from "next-auth"
+import { signOut } from "@/server/auth"
+
+export const UserButton = ({user}: Session) => {
+    return (
+        <div>
+            <h1>{user?.email}</h1>
+            {/* <button onClick={() => signOut()}>Sign out</button> */}
+        </div>
+    )
+}
