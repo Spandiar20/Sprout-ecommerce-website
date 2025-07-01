@@ -1,4 +1,4 @@
-import Card from "@/components/ui/card"
+import { Card } from "@/components/ui/card"
 import Socials from "@/components/auth/socials"
 import { BackButton } from "@/components/auth/back-button"
 

@@ -1,6 +1,6 @@
 'use client'
 
-import Button from "@/components/ui/button"
+import { Button } from "@/components/ui/button"
 import { signIn } from "@/server/auth"
 
 export default function Socials(){
