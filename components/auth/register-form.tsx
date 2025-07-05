@@ -4,42 +4,61 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel,Form
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { zodResolver as resolver } from "@hookform/resolvers/zod"
-import { LoginSchema } from "@/types/login-schema"
+import { RegisterSchema } from "@/types/register-schema"
 import { useState } from "react"
 import * as z from 'zod'
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { emailSignIn } from "@/server/actions/email-signin"
 import { useAction } from "next-safe-action/hooks"
 import { cn } from "@/lib/utils"
+import { emailRegister } from "@/server/actions/email-register"
+import { log } from "console"
 
-export const LoginForm = () => {
+export const RegisterForm = () => {
     const form = useForm({
-        resolver: resolver(LoginSchema),
+        resolver: resolver(RegisterSchema),
         defaultValues: {
-            email: '',
-            password: '',
+            email: "",
+            password: "",
+            confirmPassword: "",
+            name: ""
         }
     })
 
     const [error, setError] = useState("")
-
-    const {execute,status} = useAction(emailSignIn, {
-        onSuccess(data) {
-            console.log(data)
+    const { execute, status } = useAction(emailRegister, {
+        onSuccess: (data) => {
+            console.log("Success", data)
         }
     })
 
-    const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+
+    const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
         execute(values)
     }
 
     return (
-        <AuthCard cardTitle="Welcome back!" backButtonHref="/auth/register" backButtonLabel="Create a new account" showSocials>
+        <AuthCard cardTitle="Create an account💥" backButtonHref="/auth/login" backButtonLabel="already have an account?" showSocials>
             <div>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <div>
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Username</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} 
+                                            placeholder="developedbysaman"
+                                            type="text" />
+                                        </FormControl>
+                                        <FormDescription />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <FormField
                                 control={form.control}
                                 name="email"
@@ -74,13 +93,29 @@ export const LoginForm = () => {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name="confirmPassword"
+                                render={({field}) => (
+                                    <FormItem>
+                                        <FormLabel>Confirm Password</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} 
+                                            placeholder="********"
+                                            type="password" />
+                                        </FormControl>
+                                        <FormDescription />
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             <Button size={"sm"} variant={"link"} asChild>
                                 <Link href="/auth/reset">Forgot you password?</Link>
                             </Button>
 
                         </div>
                         <Button type={'submit'} className={cn("w-full my-2", status === 'executing' ? "animate-pules" : "")}>
-                            {"Login"}
+                            Register
                         </Button>
                     </form>
                 </Form>
