@@ -12,7 +12,8 @@ import { Button } from "@/components/ui/button"
 import { useAction } from "next-safe-action/hooks"
 import { cn } from "@/lib/utils"
 import { emailRegister } from "@/server/actions/email-register"
-import { log } from "console"
+import { FormError } from "@/components/auth/form-error"
+import { FormSuccess } from "@/components/auth/form-success"
 
 export const RegisterForm = () => {
     const form = useForm({
@@ -26,9 +27,11 @@ export const RegisterForm = () => {
     })
 
     const [error, setError] = useState("")
+    const [success, setSuccess] = useState("")
     const { execute, status } = useAction(emailRegister, {
         onSuccess: (data) => {
-            console.log("Success", data)
+            if (data.data?.error) setError(data.data.error)
+            if (data.data?.success) setSuccess(data.data.success)
         }
     })
 
@@ -114,6 +117,8 @@ export const RegisterForm = () => {
                             </Button>
 
                         </div>
+                        <FormSuccess message={success}></FormSuccess>
+                        <FormError message={error}></FormError>
                         <Button type={'submit'} className={cn("w-full my-2", status === 'executing' ? "animate-pules" : "")}>
                             Register
                         </Button>
