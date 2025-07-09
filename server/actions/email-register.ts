@@ -8,13 +8,14 @@ import { users } from "../schema";
 import { eq } from "drizzle-orm";
 import { generateEmailVerificationToken } from "./tokens";
 import { sendVerificationEmail } from "@/server/actions/email";
+import { hashPassword } from "../auth";
 
 const actionClient = createSafeActionClient()
 
 export const emailRegister = actionClient
     .inputSchema(RegisterSchema)
     .action(async ({parsedInput : {email, password, name}}) => {
-        const hashPassword = await bcrypt.hash(password, 10)
+        const hashedPassword = hashPassword(password)
         const existingUser = await db.query.users.findFirst({
             where: eq(users.email, email)
         })
@@ -33,7 +34,7 @@ export const emailRegister = actionClient
         await db.insert(users).values({
             email,
             name,
-            password: hashPassword,
+            password: hashedPassword,
         })
 
         const verificationToken = await generateEmailVerificationToken(email)
