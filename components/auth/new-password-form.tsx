@@ -12,12 +12,14 @@ import { emailSignIn } from "@/server/actions/email-signin"
 import { useAction } from "next-safe-action/hooks"
 import { cn } from "@/lib/utils"
 import { FormSuccess } from "./form-success"
-import { ResetSchema } from "@/types/reset-schema"
+import { ResetPasswordSchema } from "@/types/new-password-schema"
 import { newPassword } from "@/server/actions/new-password"
+import { useSearchParams } from "next/navigation"
+import { FormError } from "./form-error"
 
 export const NewPasswordForm = () => {
-    const form = useForm<z.infer<typeof ResetSchema>>({
-        resolver: resolver(ResetSchema),
+    const form = useForm<z.infer<typeof ResetPasswordSchema>>({
+        resolver: resolver(ResetPasswordSchema),
         defaultValues: {
             password: '',
         }
@@ -32,8 +34,11 @@ export const NewPasswordForm = () => {
         }
     })
 
-    const onSubmit = (values: z.infer<typeof ResetSchema>) => {
-        execute(values)
+    const searchParams = useSearchParams();
+    const token = searchParams.get("token")
+
+    const onSubmit = (values: z.infer<typeof ResetPasswordSchema>) => {
+        execute({password: values.password, token})
     }
 
     return (
@@ -52,6 +57,7 @@ export const NewPasswordForm = () => {
                                             <Input {...field} 
                                             placeholder="********"
                                             type="password"
+                                            disabled={status === "executing"}
                                             autoComplete="current-password" />
                                         </FormControl>
                                         <FormDescription />
@@ -60,10 +66,7 @@ export const NewPasswordForm = () => {
                                 )}
                             />
                             <FormSuccess message={success}></FormSuccess>
-                            <FormSuccess message={error}></FormSuccess>
-                            <Button size={"sm"} variant={"link"} asChild>
-                                <Link href="/auth/reset">Forgot you password?</Link>
-                            </Button>
+                            <FormError message={error}></FormError>
 
                         </div>
                         <Button type={'submit'} className={cn("w-full my-2", status === 'executing' ? "animate-pules" : "")}>

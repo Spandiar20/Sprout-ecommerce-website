@@ -1,17 +1,21 @@
 'use server'
 
 import { createSafeActionClient } from "next-safe-action";
-import { ResetSchema } from "@/types/reset-schema";
+import { ResetPasswordSchema } from "@/types/new-password-schema";
 import { getPasswordResetToken } from "@/server/actions/tokens";
 import { db } from "..";
 import { eq } from "drizzle-orm";
 import { passwordResetTokens, users } from "@/server/schema";
 import { hashPassword } from "../auth";
+import { Pool } from "@neondatabase/serverless"
+import { drizzle } from "drizzle-orm/neon-serverless"
 
 const action = createSafeActionClient()
 
-export const newPassword = action.inputSchema(ResetSchema).action(async ({parsedInput: { password, token } }) => {
+export const newPassword = action.inputSchema(ResetPasswordSchema).action(async ({parsedInput: { password, token } }) => {
     try {
+        const pool = new Pool({connectionString: process.env.POSTGRES_URL})
+        const dbPool = drizzle(pool)
         if (!token) {
             return { error: "Token is required" }
         }
@@ -35,7 +39,7 @@ export const newPassword = action.inputSchema(ResetSchema).action(async ({parsed
 
         const hashedPassword = hashPassword(password)
 
-        await db.transaction(async (tx) => {
+        await dbPool.transaction(async (tx) => {
             await tx
                 .update(users)
                 .set({
