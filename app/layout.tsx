@@ -16,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-        <body className={cn("px-6 md:px-12 max-w-7xl mx-auto")}>
+        <body className={cn("w-full mx-auto")}>
           <Nav />
           {children}
         </body>
