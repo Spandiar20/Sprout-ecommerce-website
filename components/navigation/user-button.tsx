@@ -13,8 +13,23 @@ import {
   } from "@/components/ui/dropdown-menu"
   import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
   import { LogOut, Moon, Settings, Sun, Truck } from 'lucide-react'
+  import { useTheme } from 'next-themes'
+  import { Switch } from "@/components/ui/switch"
+import { useState } from 'react'
 
 export const UserButton = ({user} : Session) => {
+    const { setTheme, theme } = useTheme();
+    const [checked, setChecked] = useState(false)
+
+    function useSwitchState() {
+        switch (theme){
+            case "dark": setChecked(true);
+            case "light": setChecked(false);
+            case "system": setChecked(false);
+        }
+    }
+
+
     if (user) {
         return (
             <div>
@@ -62,24 +77,37 @@ export const UserButton = ({user} : Session) => {
                         <span className='text-xs font-medium text-secondary-foreground'>{user.email}</span>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer transition-all duration-300'>
+                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer'>
                         <Truck className='group-hover:translate-x-1 transition-all duration-200'/>
                         My Orders
                     </DropdownMenuItem>
-                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer transition-all duration-300'>
+                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer'>
                         <Settings className='group-hover:rotate-90 transition-all duration-200 ease-in-out'></Settings>
                         Settings
                     </DropdownMenuItem>
-                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer transition-all duration-300'>
-                        <div className='flex items-center'>
-                            <Sun className='group-hover:translate-x-1 transition-all duration-200'></Sun>
-                            <Moon className='group-hover:translate-x-1 transition-all duration-200'></Moon>
-                            <p>
-                                Theme <span>theme</span>
-                            </p>
+                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer'>
+                        {theme && (
+                            <div onClick={(e) => e.stopPropagation()} className='flex items-center justify-between w-full'>
+                            <div className='flex items-center gap-1'>
+                                <div className='flex mr-5 relative gap-0.5 items-center'>
+                                    <Sun className='group-hover:text-yellow-300 absolute dark:scale-0 dark:-rotate-90 transition-all duration-200'></Sun>
+                                    <Moon className='group-hover:text-blue-900 absolute scale-0 dark:scale-100 transition-all duration-200'></Moon>
+                                </div>
+                                <p className='dark:text-blue-400 text-yellow-300 flex items-center gap-2 transition-all'>
+                                    {theme[0].toUpperCase() + theme.slice(1)} Mode
+                                </p>
+                            </div>
+                            <Switch className='scale-75' onCheckedChange={(e) => {
+                                setChecked(prev => !prev)
+                                console.log(e)
+                                if (e) setTheme("dark")
+                                if (!e) setTheme("light")
+                            }} checked={checked}
+                            />
                         </div>
+                        )}
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => signOut()} className='group hover:bg-destructive/30 items-center flex font-medium cursor-pointer transition-all duration-300'>
+                    <DropdownMenuItem onClick={() => signOut()} className='group hover:bg-destructive/30 items-center flex font-medium cursor-pointer'>
                         <LogOut className='group-hover:scale-75 group-hover:text-destructive transition-all duration-200'></LogOut>
                         Sign out
                     </DropdownMenuItem>

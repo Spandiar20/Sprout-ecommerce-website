@@ -1,6 +1,7 @@
 import "./globals.css";
 import Nav from "@/components/navigation/nav"
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "next-themes";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -15,10 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
         <body className={cn("w-full mx-auto")}>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          
           <Nav />
           {children}
+          </ThemeProvider>
         </body>
     </html>
   );
