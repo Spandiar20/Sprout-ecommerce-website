@@ -16,10 +16,13 @@ import {
   import { useTheme } from 'next-themes'
   import { Switch } from "@/components/ui/switch"
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export const UserButton = ({user} : Session) => {
     const { setTheme, theme } = useTheme();
     const [checked, setChecked] = useState(false)
+
+    const router = useRouter();
 
     function useSwitchState() {
         switch (theme){
@@ -77,11 +80,11 @@ export const UserButton = ({user} : Session) => {
                         <span className='text-xs font-medium text-secondary-foreground'>{user.email}</span>
                     </div>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer'>
+                    <DropdownMenuItem onClick={() => {router.push("/dashboard/orders")}} className='group items-center flex font-medium cursor-pointer'>
                         <Truck className='group-hover:translate-x-1 transition-all duration-200'/>
                         My Orders
                     </DropdownMenuItem>
-                    <DropdownMenuItem className='group items-center flex font-medium cursor-pointer'>
+                    <DropdownMenuItem onClick={() => {router.push("/dashboard/settings")}} className='group items-center flex font-medium cursor-pointer'>
                         <Settings className='group-hover:rotate-90 transition-all duration-200 ease-in-out'></Settings>
                         Settings
                     </DropdownMenuItem>
