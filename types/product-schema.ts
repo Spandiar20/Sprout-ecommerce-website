@@ -1,3 +1,4 @@
+
 import * as z from 'zod'
 
 export const ProductSchema = z.object({
@@ -9,3 +10,5 @@ export const ProductSchema = z.object({
         .positive({ message: "Price must be a positive number"}),
     
 })
+
+export type zProductSchema = z.infer<typeof ProductSchema>
