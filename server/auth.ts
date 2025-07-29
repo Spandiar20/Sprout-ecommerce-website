@@ -43,6 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.isOAuth = token.isOAuth as boolean
         session.user.image = token.image as string
       }
+      return session
     },
     async jwt({token}) {
       if(!token.sub) return token

@@ -91,6 +91,7 @@ export const users = pgTable("user", {
       token: text("token").notNull(),
       expires: timestamp("expires", { mode: "date" }).notNull(),
       email: text("email").notNull(),
+      UserId: text('UserId').references(() => users.id, { onDelete: "cascade" })
     },
     (vt: { id: any; token: any }) => ({
       compoundKey: primaryKey({ columns: [vt.id, vt.token] }),

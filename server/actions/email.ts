@@ -35,3 +35,18 @@ export const sendPasswordResetEmail = async (email: string, token: string) => {
     if (error) return error
     if (data) return data
 }
+
+export const sendTwoFactorTokenByEmail = async (email: string, token: string) => {
+    const confirmLink = `${domain}/auth/new-verification?token=${token}`
+
+    const { data, error } = await resend.emails.send({
+        from: "Acme <onboarding@resend.dev>",
+        to: email,
+        subject: "Sprout & Scrobble - Two Factor Authentication",
+        html: `<p>The code below is your two factor authentication code. Do not share this code with anyone:</p>
+               <p>Your Confirmation Code: ${token} </p>
+               <p>If you did not request this, please consider change your password.</p>`,
+    })
+    if (error) return error
+    if (data) return data
+}

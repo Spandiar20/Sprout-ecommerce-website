@@ -37,7 +37,7 @@ export const settings = safeAction.inputSchema(SettingsSchema).action(async (val
     if(values.parsedInput.password && values.parsedInput.newPassword && dbUser.password){
         const passwordMatch = verifyPassword(values.parsedInput.password, dbUser.password)
         if (!passwordMatch) {
-            return { error: "Password does not match"}
+            return { error: "Password doesn't match"}
         }
 
         const samePassword = verifyPassword(values.parsedInput.newPassword, dbUser.password)

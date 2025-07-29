@@ -41,12 +41,12 @@ export default function SettingsCard(session : SettingsForm) {
     const [avatarUploading, setAvatarUploading] = useState(false)
     const [error, setError] = useState<string | undefined>(undefined)
     const [success, setSuccess] = useState<string | undefined>(undefined)
-
+    console.log(session.session.user)
     const form = useForm<z.infer<typeof SettingsSchema>>({
         resolver: zodResolver(SettingsSchema),
         defaultValues: {
-            password: undefined,
-            newPassword: undefined,
+            password: '',
+            newPassword: '',
             name: session.session.user?.name || undefined,
             email: session.session.user?.email || undefined,
             image: session.session.user?.image || undefined,
@@ -118,7 +118,7 @@ export default function SettingsCard(session : SettingsForm) {
                         )}
                     </div>
                     <FormControl>
-                        <Input placeholder="User Image" type="hidden" disabled={status==='executing'} {...field} />
+                        <Input  placeholder="User Image" type="hidden" disabled={status==='executing'} {...field} />
                     </FormControl>
                     <FormMessage />
                     </FormItem>
@@ -163,7 +163,11 @@ export default function SettingsCard(session : SettingsForm) {
                     <FormItem>
                     <FormLabel>Two Factor Authentication</FormLabel>
                     <FormControl>
-                        <Switch disabled={status==='executing' || session.session.user.isOAuth===true}></Switch>
+                        <Switch 
+                        disabled={status==='executing' || session.session.user.isOAuth===true}
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        ></Switch>
                     </FormControl>
                     <FormMessage />
                     </FormItem>
