@@ -5,6 +5,7 @@ import { BarChart, Package, PenSquare, Settings, Truck } from "lucide-react"
 import Link from "next/link";
 
 import DashboardNav from "@/components/navigation/dashboard-nav";
+import Toaster from "@/components/ui/toaster";
 
 
 export default async function DashboardLayout({
@@ -52,6 +53,7 @@ export default async function DashboardLayout({
     return (
         <div>
             <DashboardNav allLinks={allLinks}></DashboardNav>
+            <Toaster />
             {children}
         </div>
     )

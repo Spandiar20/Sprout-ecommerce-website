@@ -1,7 +1,7 @@
 'use client'
 
 import { useForm } from "react-hook-form";
-import { zProductSchema } from "@/types/product-schema";
+import { ProductSchema, zProductSchema } from "@/types/product-schema";
 import {
     Card,
     CardAction,
@@ -24,18 +24,41 @@ import {
 import { Input } from "@/components/ui/input"
 import { useAction } from "next-safe-action/hooks";
 import { DollarSign } from "lucide-react";
+import Tiptap from "./tiptap";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateProduct } from "@/server/actions/create-product";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner"
 
 export default function ProductForm() {
 
     const form = useForm<zProductSchema>({
+        resolver: zodResolver(ProductSchema),
         defaultValues: {
             title: '',
             description: '',
             price: 0
+        },
+        mode: 'onChange'
+    })
+
+    const router = useRouter();
+    const { execute, status } = useAction(CreateProduct, {
+        onSuccess: (data) => {
+            if(data.data?.success) router.push('/dashboard/products')
+            toast.success(data.data?.success || 'Product created successfully!')
+        },
+        onExecute: (data) => {
+            toast.loading('Creating product...')
+        },
+        onError: (error) => {
+            console.log(error)
         }
     })
 
-    // const onSubmit = useAction<(async (data))
+    async function onSubmit(values: zProductSchema) {
+        execute(values)
+    }
 
     return (
         <div className="">
@@ -43,17 +66,16 @@ export default function ProductForm() {
                 <CardHeader>
                     <CardTitle>Card Title</CardTitle>
                     <CardDescription>Card Description</CardDescription>
-                    {/* <CardAction>Card Action</CardAction> */}
                 </CardHeader>
                 <CardContent>
                 <Form {...form}>
-                    <form onSubmit={() => {console.log("Hello bitches")}} className="space-y-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                         <FormField
                         control={form.control}
                         name="title"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel>Product Title</FormLabel>
+                            <FormLabel className="mb-1">Product Title</FormLabel>
                             <FormControl>
                                 <Input placeholder="Darth Vader's light saber" {...field} />
                             </FormControl>
@@ -69,11 +91,8 @@ export default function ProductForm() {
                             <FormItem>
                             <FormLabel>Description</FormLabel>
                             <FormControl>
-                                <Input placeholder="e.g This is the rarest item in the universe" {...field} />
+                                <Tiptap val={field.value} />
                             </FormControl>
-                            <FormDescription>
-                                Explain your product details.
-                            </FormDescription>
                             <FormMessage />
                             </FormItem>
                         )}
@@ -98,13 +117,10 @@ export default function ProductForm() {
                             </FormItem>
                         )}
                         />
-                        <Button type="submit" className="font-bold w-full mt-4">Add Product</Button>
+                        <Button disabled={status === 'executing' || !form.formState.isValid || !form.formState.isDirty} type="submit" className="font-bold w-full mt-4">Add Product</Button>
                     </form>
                 </Form>
                 </CardContent>
-                {/* <CardFooter>
-                    <p>Card Footer</p>
-                </CardFooter> */}
             </Card>
         </div>
     )
