@@ -27,8 +27,10 @@ import { DollarSign } from "lucide-react";
 import Tiptap from "./tiptap";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateProduct } from "@/server/actions/create-product";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner"
+import { getProduct } from "@/server/actions/get-product";
+import { useEffect } from "react";
 
 export default function ProductForm() {
 
@@ -43,13 +45,45 @@ export default function ProductForm() {
     })
 
     const router = useRouter();
+    const searchParams = useSearchParams()
+    const editMode = searchParams.get('id')
+
+    const checkProduct = async (id: number) => {
+        if (editMode) {
+            const data = await getProduct(id)
+            if(data.error) {
+                toast.error(data.error)
+                router.push('/dashboard/products') 
+                return
+            }
+            if(data.success) {
+                const id = parseInt(editMode)
+                form.setValue("title", data.success.title)
+                form.setValue("description", data.success.description)
+                form.setValue("price", data.success.price)
+                form.setValue("id", id)
+            }
+        }
+    }
+
+    useEffect(() => {
+        if (editMode) {
+            checkProduct(parseInt(editMode))
+        }
+    }, [])
+
     const { execute, status } = useAction(CreateProduct, {
         onSuccess: (data) => {
             if(data.data?.success) router.push('/dashboard/products')
             toast.success(data.data?.success || 'Product created successfully!')
         },
         onExecute: (data) => {
-            toast.loading('Creating product...')
+            if(editMode) {
+                toast.loading("Updating product")
+            }
+            if(!editMode) {
+                toast.loading("Creating product")
+            }
         },
         onError: (error) => {
             console.log(error)
@@ -64,8 +98,8 @@ export default function ProductForm() {
         <div className="">
             <Card>
                 <CardHeader>
-                    <CardTitle>Card Title</CardTitle>
-                    <CardDescription>Card Description</CardDescription>
+                    <CardTitle>{editMode ? <span>Edit Product</span> : <span>Create Product</span>}</CardTitle>
+                    <CardDescription>{editMode ? 'Edit an existing product' : 'Add a new product'}</CardDescription>
                 </CardHeader>
                 <CardContent>
                 <Form {...form}>
@@ -117,7 +151,7 @@ export default function ProductForm() {
                             </FormItem>
                         )}
                         />
-                        <Button disabled={status === 'executing' || !form.formState.isValid || !form.formState.isDirty} type="submit" className="font-bold w-full mt-4">Add Product</Button>
+                        <Button disabled={status === 'executing' || !form.formState.isValid || !form.formState.isDirty} type="submit" className="font-bold w-full mt-4">{editMode ? 'Save changes' : 'Add product'}</Button>
                     </form>
                 </Form>
                 </CardContent>
