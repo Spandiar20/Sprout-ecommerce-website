@@ -106,3 +106,6 @@ export const users = pgTable("user", {
     created: timestamp("created").defaultNow(),
     price: real("price").notNull(),
   })
+  
+
+  

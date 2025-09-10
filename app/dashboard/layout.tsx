@@ -51,7 +51,7 @@ export default async function DashboardLayout({
     const allLinks = [...adminLinks, ...userLinks]
 
     return (
-        <div>
+        <div className="px-[3%]">
             <DashboardNav allLinks={allLinks}></DashboardNav>
             <Toaster />
             {children}

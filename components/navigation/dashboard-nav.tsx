@@ -11,7 +11,7 @@ export default function DashboardNav({allLinks} : {allLinks: {label: string, pat
     const pathName = usePathname()
 
     return (
-        <nav className=" pt-8 overflow-auto px-5">
+        <nav className=" pt-8 overflow-auto px-5 mb-5">
                 <AnimatePresence>
                     <ul className="flex justify-evenly gap-5 text-xs font-bold">
                         {allLinks.map((link) => (

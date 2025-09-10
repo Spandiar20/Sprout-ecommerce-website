@@ -76,6 +76,7 @@ export default function ProductForm() {
         onSuccess: (data) => {
             if(data.data?.success) router.push('/dashboard/products')
             toast.success(data.data?.success || 'Product created successfully!')
+            toast.dismiss()
         },
         onExecute: (data) => {
             if(editMode) {
