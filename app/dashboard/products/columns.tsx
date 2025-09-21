@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef, Row } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal, PlusCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,12 +17,19 @@ import { deleteProduct } from "@/server/actions/delete-product"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
 import Link from "next/link"
+import { VariantsWithImagesTags } from "@/lib/infer-type"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import ProductVariant from "./product-variant"
 
 type ProductColumn = {
     title: string,
     price: number,
     image: string,
-    variants: any,
+    variants: VariantsWithImagesTags[],
     id: number,
 }
 
@@ -85,6 +92,42 @@ export const columns: ColumnDef<ProductColumn>[] = [
   {
     accessorKey: 'variants',
     header: 'Variants',
+    cell: ({ row }) => {
+        const variants = row.getValue("variants") as VariantsWithImagesTags[]
+        return(
+            <div>
+                {variants.map((variant) => (
+                    <div key={variant.id}>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <ProductVariant productID={variant.productID} variant={variant} editMode={true}>
+                                    <div className="w-5 h-5 rounded-full" key={variant.id} style={{backgroundColor: variant.color}}>
+
+                                    </div>
+                                </ProductVariant>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>{variant.productType}</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
+                ))}
+
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <span className="cursor-pointer text-primary">
+                            <ProductVariant editMode={false} productID={row.original.id}>
+                                <PlusCircle className="h-4 w-4"></PlusCircle>
+                            </ProductVariant>
+                        </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p>Create a new product Variant</p>
+                    </TooltipContent>
+                </Tooltip>
+            </div>
+        )
+    }
   },
   {
     accessorKey: 'price',
