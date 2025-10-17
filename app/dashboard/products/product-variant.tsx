@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { InputTags } from "./input-tags"
+import VariantImages from "./variant-images"
 
 
 function onSubmit(values: z.infer<typeof VariantSchema>) {
@@ -47,7 +48,7 @@ export default function ProductVariant({editMode, productID, variant, children}:
     return (
         <Dialog>
             <DialogTrigger>{children}</DialogTrigger>
-            <DialogContent>
+            <DialogContent className="lg:max-w-screen-lg overflow-y-scroll max-h-[640px] rounded-md">
                 <DialogHeader>
                 <DialogTitle>{editMode ? 'Edit' : 'Create'} your variant</DialogTitle>
                 <DialogDescription>
@@ -95,7 +96,7 @@ export default function ProductVariant({editMode, productID, variant, children}:
                             </FormItem>
                         )}
                         />
-                        {/* <VariantImages></VariantImages> */}
+                        <VariantImages></VariantImages>
 
                         {editMode && variant && (
                             <Button type="button" onClick={(e) => {e.preventDefault()}}>

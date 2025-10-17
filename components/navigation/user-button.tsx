@@ -62,7 +62,7 @@ export const UserButton = ({user} : Session) => {
                             <Image
                             src={user.image}
                             alt={user.name!}
-                            fill={true}
+                            // fill={true}
                             width={36}
                             height={36}
                             className='rounded-full'

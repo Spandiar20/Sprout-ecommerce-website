@@ -2,7 +2,7 @@
 
 import { Input, InputProps } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { Dispatch, SetStateAction, useState } from "react"
+import { Dispatch, forwardRef, SetStateAction, useState } from "react"
 import { useFormContext } from "react-hook-form"
 import {AnimatePresence, motion} from "framer-motion"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,7 @@ type InputTagsProps = InputProps & {
     onChange: Dispatch<SetStateAction<string[]>>
 }
 
-export const InputTags = ({ onChange, value, ...props }: InputTagsProps) => {
+export const InputTags = forwardRef<HTMLInputElement, InputTagsProps>(({ onChange, value, ...props },ref) => {
     const [pendingDataPoint, setPendingDataPoint] = useState("")
     const [focused, setFocused] = useState(false)
 
@@ -68,4 +68,6 @@ export const InputTags = ({ onChange, value, ...props }: InputTagsProps) => {
             </motion.div>
         </div>
     )
-}
+})
+
+InputTags.displayName = "InputTags"

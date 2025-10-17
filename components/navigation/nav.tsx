@@ -25,7 +25,7 @@ export default async function Nav() {
                         </Button>
                     </li>
                 ) : (
-                    <li className="h-full w-fit"><UserButton user={session?.user} expires={session?.expires!}/></li>
+                    <li className=""><UserButton user={session?.user} expires={session?.expires!}/></li>
                 )}
                 </ul>
             </nav>
