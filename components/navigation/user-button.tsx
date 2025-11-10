@@ -15,12 +15,12 @@ import {
   import { LogOut, Moon, Settings, Sun, Truck } from 'lucide-react'
   import { useTheme } from 'next-themes'
   import { Switch } from "@/components/ui/switch"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export const UserButton = ({user} : Session) => {
     const { setTheme, theme } = useTheme();
-    const [checked, setChecked] = useState(false)
+    const [checked, setChecked] = useState(true)
 
     const router = useRouter();
 
@@ -31,9 +31,10 @@ export const UserButton = ({user} : Session) => {
             case "system": setChecked(false);
         }
     }
-
-
+    
+    
     if (user) {
+        // useSwitchState();
         return (
             <div>
     
@@ -100,9 +101,9 @@ export const UserButton = ({user} : Session) => {
                                     {theme[0].toUpperCase() + theme.slice(1)} Mode
                                 </p>
                             </div>
+
                             <Switch className='scale-75' onCheckedChange={(e) => {
                                 setChecked(prev => !prev)
-                                console.log(e)
                                 if (e) setTheme("dark")
                                 if (!e) setTheme("light")
                             }} checked={checked}

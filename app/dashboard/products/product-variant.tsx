@@ -25,18 +25,37 @@ import {
 import { Input } from "@/components/ui/input"
 import { InputTags } from "./input-tags"
 import VariantImages from "./variant-images"
-
-
-function onSubmit(values: z.infer<typeof VariantSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
-}
+import { useAction } from "next-safe-action/hooks"
+import { toast } from "sonner"
+import { createVariant } from "@/server/actions/create-variant"
 
 export default function ProductVariant({editMode, productID, variant, children}: {editMode: boolean, productID?: number, variant?: VariantsWithImagesTags, children: React.ReactNode}) {
+    
+    const {execute, status} = useAction(createVariant, {
+        onExecute(){
+            toast.loading("Applying changes...", {duration: 500})
+        },
+        onSuccess(data){
+            if(data?.data?.error) {
+                toast.error(data.data.error)
+            }
+            if(data?.data?.success) {
+                toast.success(data.data.success)
+            }
+        }
+    })
+    
+    function onSubmit(values: z.infer<typeof VariantSchema>) {
+        // Do something with the form values.
+        // ✅ This will be type-safe and validated.
+        console.log("hey")
+        execute(values)
+    }
+
     const form = useForm<z.infer<typeof VariantSchema>>({
         resolver: zodResolver(VariantSchema),
         defaultValues: {
+            productID: productID,
             tags: [],
             variantImages: [],
             color: "#000000",

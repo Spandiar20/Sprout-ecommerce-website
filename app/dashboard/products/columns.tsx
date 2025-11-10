@@ -2,6 +2,7 @@
 
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { MoreHorizontal, PlusCircle } from "lucide-react"
+import { useRef } from 'react'
 
 import { Button } from "@/components/ui/button"
 import {
@@ -48,19 +49,38 @@ async function deleteProductWrapper(id: number) {
 }
 
 const ActionCell = ({ row }: { row: Row<ProductColumn> }) => {
+    const toastId = useRef<any>(null)
+
     const { execute, status } = useAction(deleteProduct, {
         onSuccess: (data) => {
+            if (toastId.current) {
+                if (data.data?.success) {
+                    toast.success(data.data.success, { id: toastId.current })
+                }
+                if (data.data?.error) {
+                    toast.error(data.data.error, { id: toastId.current })
+                }
+                toastId.current = null
+                return
+            }
+
             if (data.data?.success) {
-                toast.success(data.data?.success)
+                toast.success(data.data.success)
             }
             if (data.data?.error) {
-                toast.error(data.data?.error)
+                toast.error(data.data.error)
             }
         },
         onExecute: () => {
-            toast.loading("Deleting product...")
+            // store the id so we can update this toast later
+            toastId.current = toast.loading("Deleting product...")
         },
         onError: (error) => {
+            if (toastId.current) {
+                toast.error(`Error: ${error}`, { id: toastId.current })
+                toastId.current = null
+                return
+            }
             toast.error(`Error: ${error}`)
         }
     })
@@ -94,14 +114,15 @@ export const columns: ColumnDef<ProductColumn>[] = [
     header: 'Variants',
     cell: ({ row }) => {
         const variants = row.getValue("variants") as VariantsWithImagesTags[]
+        console.log(variants)
         return(
-            <div>
+            <div className="flex align-center gap-1">
                 {variants.map((variant) => (
-                    <div key={variant.id}>
+                    <div key={variant.id} className="h-4 w-4">
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <ProductVariant productID={variant.productID} variant={variant} editMode={true}>
-                                    <div className="w-5 h-5 rounded-full" key={variant.id} style={{backgroundColor: variant.color}}>
+                                    <div className="w-4 h-4 rounded-full" key={variant.id} style={{backgroundColor: variant.color}}>
 
                                     </div>
                                 </ProductVariant>
@@ -115,7 +136,7 @@ export const columns: ColumnDef<ProductColumn>[] = [
 
                 <Tooltip>
                     <TooltipTrigger asChild>
-                        <span className="cursor-pointer text-primary">
+                        <span className="cursor-pointer text-primary flex align-center">
                             <ProductVariant editMode={false} productID={row.original.id}>
                                 <PlusCircle className="h-4 w-4"></PlusCircle>
                             </ProductVariant>

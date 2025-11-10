@@ -2,8 +2,8 @@ import * as z from "zod"
 
 export const VariantSchema = z.object({
     productID: z.number(),
-    id: z.number(),
-    editMode: z.boolean(),
+    id: z.number().optional(),
+    editMode: z.boolean().optional(),
     productType: z
         .string()
         .min(3, { message: "Product type must be at least 3 characters long"}),

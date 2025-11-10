@@ -18,7 +18,14 @@ export default async function Products() {
             id: product.id,
             title: product.title,
             price: product.price,
-            variants: [],
+            variants: (product.productVariants ?? []).map(v => ({
+                id: v.id,
+                productID: product.id,
+                color: v.color ?? "#000000",
+                productType: v.productType ?? "",
+                variantImages: v.variantImages ?? [],
+                variantTags: v.variantTags ?? [],
+            })),
             image: placeholder.src
         }
     })

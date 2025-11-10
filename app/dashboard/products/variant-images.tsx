@@ -121,7 +121,7 @@ export default function VariantImages() {
                                         key={field.id}
                                         value={field}
                                         id={field.id}
-                                        ondragStart={() => setActive(index)}
+                                        // ondragStart={() => setActive(index)}
                                         className={
                                         cn(
                                             field.url.search('blob:') === 0

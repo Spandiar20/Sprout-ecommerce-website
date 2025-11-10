@@ -2,6 +2,7 @@ import "./globals.css";
 import Nav from "@/components/navigation/nav"
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
+import Toaster from "@/components/ui/toaster";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function RootLayout({
           <Nav />
           {children}
           </ThemeProvider>
+          <Toaster />
         </body>
     </html>
   );
