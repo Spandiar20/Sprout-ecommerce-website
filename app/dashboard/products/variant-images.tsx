@@ -49,7 +49,7 @@ export default function VariantImages() {
                     <FormControl>
                         <UploadDropzone
                             endpoint={"variantUploader"}
-                            className="ut-allowed-content:text-secondary-foreground ut-label:text-primary ur-upload-icon:text-primary/50 hover:bg-primary/10 transition-all duration-500 ease-in-out border-secondary ut-button:bg-primary/75 ut-button:ut-readying:bg-secondary"
+                            className="p-0 ut-allowed-content:text-secondary-foreground ut-label:text-primary ur-upload-icon:text-primary/50 hover:bg-primary/10 transition-all duration-500 ease-in-out border-secondary ut-button:bg-primary/75 ut-button:ut-readying:bg-secondary"
                             onUploadError={(error) => {
                                 setError('variantImages', {
                                     type: "validate",

@@ -28,12 +28,41 @@ import VariantImages from "./variant-images"
 import { useAction } from "next-safe-action/hooks"
 import { toast } from "sonner"
 import { createVariant } from "@/server/actions/create-variant"
+import { useEffect, useState } from "react"
+import { deleteVariant } from "@/server/actions/delete-variant"
 
 export default function ProductVariant({editMode, productID, variant, children}: {editMode: boolean, productID?: number, variant?: VariantsWithImagesTags, children: React.ReactNode}) {
     
+    const [open, setOpen] = useState(false);
+
+    const setEdit = () => {
+        if(!editMode){
+            form.reset()
+            return
+        }
+        if(editMode && variant) {
+            form.setValue('editMode', true)
+            form.setValue('id', variant.id)
+            form.setValue('color', variant.color)
+            form.setValue('productID', variant.productID)
+            form.setValue('productType', variant.productType)
+            form.setValue("tags", variant.variantTags.map((tag) => tag.tag))
+            form.setValue('variantImages', variant.variantImages.map((img) => ({
+                name: img.name,
+                size: img.size,
+                url: img.url,
+            })))
+        }
+    }
+
+    useEffect(() => {
+        setEdit()
+    }, [])
+
     const {execute, status} = useAction(createVariant, {
         onExecute(){
             toast.loading("Applying changes...", {duration: 500})
+            setOpen(false)
         },
         onSuccess(data){
             if(data?.data?.error) {
@@ -44,11 +73,23 @@ export default function ProductVariant({editMode, productID, variant, children}:
             }
         }
     })
+
+    const variantAction = useAction(deleteVariant, {
+        onExecute(){
+            toast.loading("Deleting variant...", {duration: 500})
+            setOpen(false)
+        },
+        onSuccess(data) {
+            if(data?.data?.error) {
+                toast.error(data.data.error)
+            }
+            if(data?.data?.success) {
+                toast.success(data.data.success)
+            }
+        }
+    })
     
     function onSubmit(values: z.infer<typeof VariantSchema>) {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log("hey")
         execute(values)
     }
 
@@ -65,7 +106,7 @@ export default function ProductVariant({editMode, productID, variant, children}:
         
     })
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger>{children}</DialogTrigger>
             <DialogContent className="lg:max-w-screen-lg overflow-y-scroll max-h-[640px] rounded-md">
                 <DialogHeader>
@@ -117,12 +158,17 @@ export default function ProductVariant({editMode, productID, variant, children}:
                         />
                         <VariantImages></VariantImages>
 
-                        {editMode && variant && (
-                            <Button type="button" onClick={(e) => {e.preventDefault()}}>
+                        <div className="flex gap-4 align-center justify-center">
+                            {editMode && variant && (
+                            <Button disabled={variantAction.status === "executing"} type="button" variant={'destructive'} onClick={(e) => {
+                                    e.preventDefault()
+                                    variantAction.execute({id: variant.id})
+                                }}>
                                 Delete Variant
                             </Button>
                         )}
-                        <Button type="submit">{editMode ? "Update Variant" : "Create Variant"}</Button>
+                        <Button disabled={status === 'executing' || !form.formState.isValid || !form.formState.isDirty} type="submit">{editMode ? "Update Variant" : "Create Variant"}</Button>
+                        </div>
                     </form>
                 </Form>
             </DialogContent>
