@@ -1,25 +1,18 @@
-import getPosts from "@/server/actions/get-posts";
+import Products from "@/components/products/products";
+import { db } from "@/server";
 
 export default async function Home() {
-  // const { error, success} = await getPosts();
-  // if (error) throw new Error(error)
-  // if (success) {
-  //   return (
-  //     <div>
-  //       Hey, here is you fucking posts:
-  
-  //       {success.map((post) => (
-  //         <div key={post.id}>
-  //           <h2>{post.title}</h2>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
-  // }
-
+  const data = await db.query.productVariants.findMany({
+    with: {
+      variantImages: true,
+      variantTags: true,
+      product: true,
+    },
+    orderBy: (productVariants, { desc }) => [desc(productVariants.id)],
+  })
   return (
-    <div>
-      
-    </div>
+    <main className="">
+      <Products variants={data}></Products>
+    </main>
   )
 }

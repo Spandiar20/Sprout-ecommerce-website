@@ -15,12 +15,6 @@ const client = algoliasearch(
     process.env.ALGOLIA_APP_ID!,
     process.env.ALGOLIA_ADMIN_KEY!
 )
-// const results = await client.searchSingleIndex({
-//   indexName: "products",
-//   searchParams: { query: "QUERY" },
-// });
-
-// console.log(results)
 
 export const createVariant = actionClient.inputSchema((VariantSchema))
     .action(async ({parsedInput: {color, editMode, id, productType, productID, tags, variantImages: newImgs}}) => {

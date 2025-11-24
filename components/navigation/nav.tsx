@@ -12,7 +12,7 @@ export default async function Nav() {
     return (
         <header>
             <nav>
-                <ul className="flex justify-between items-center bg-cyan-950 w-full py-4 px-12 text-white">
+                <ul className="flex justify-between items-center border-b-2 w-full py-4 px-12 text-white">
                     <li className="w-8">
                     <Link href={'/'} aria-label="sprout and scribble logo">
                         <Logo />
