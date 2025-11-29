@@ -1,9 +1,11 @@
 import ProductPick from "@/components/products/product-pick";
 import ProductType from "@/components/products/product-type";
 import formatPrice from "@/lib/format-price";
+import {Separator} from "@/components/ui/separator";
 import { db } from "@/server";
 import { productVariants } from "@/server/schema";
 import { eq } from "drizzle-orm";
+import ProductShowCase from "@/components/products/product-showcase";
 
 export async function generateStaticParams() {
     const data = await db.query.productVariants.findMany({
@@ -36,21 +38,21 @@ export default async function Page({ params }: {params: { slug: string}}) {
     if (variant){
         return(
             <main>
-                <section>
+                <section className="flex flex-col lg:flex-row gap-4 lg:gap-12">
                     <div className="flex-1">
-                        <h1>images</h1>
+                        <ProductShowCase variants={variant.product.productVariants}></ProductShowCase>
                     </div>
-                    <div className="flex gap-2 flex-col flex-1">
-                        <h2>{variant?.product.title}</h2>
+                    <div className="flex flex-col flex-1">
+                        <h2 className="font-bold text-2xl">{variant?.product.title}</h2>
                         <div>
                             <ProductType variants={variant?.product.productVariants}></ProductType>
                         </div>
-                        <Seperator></Seperator>
-                        <p className="text-2xl font-medium">
+                        <Separator className="my-2"/>
+                        <p className="text-2xl font-medium py-2">
                             {formatPrice(variant.product.price)}
                         </p>
                         <div dangerouslySetInnerHTML={{__html: variant.product.description}}></div>
-                        <p className="text-secondary-foreground">Available Colors:</p>
+                        <p className="text-secondary-foreground font-medium my-3">Available Colors:</p>
                         <div className="flex gap-4">
                             {variant.product.productVariants.map((prodVariant) => (
                                 <ProductPick

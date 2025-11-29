@@ -1,0 +1,84 @@
+'use client'
+
+import {
+  Carousel,
+  CarouselApi,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+import { VariantsWithImagesTags } from "@/lib/infer-type"
+import { cn } from "@/lib/utils"
+import Image from "next/image"
+import { useSearchParams } from "next/navigation"
+import { useEffect, useState } from "react"
+
+export default function ProductShowCase({
+    variants,
+}: {
+    variants: VariantsWithImagesTags[]
+}){
+    const [api, setApi] = useState<CarouselApi>()
+    const [activeThumbnail, setActiveThumbnail] = useState([0])
+    const searchParams = useSearchParams()
+    const selectedColor = searchParams.get("type") || variants[0].productType
+
+    useEffect(() => {
+        if (!api) return
+
+        api.on("slidesInView", (e) => {
+            setActiveThumbnail(e.slidesInView())
+        })
+    }, [api])
+
+    const updatePreview = (index: number) => {
+        api?.scrollTo(index)
+    }
+
+    return(
+        <Carousel setApi={setApi} opts={{ loop: true }}>
+            <CarouselContent>
+                {variants.map((variant) => 
+                    variant.productType === selectedColor && variant.variantImages.map((img) => {
+                        return(
+                            <CarouselItem key={img.id}>
+                                {img.url ? (
+                                    <Image
+                                        priority
+                                        className="rounded-md"
+                                        width={1280}
+                                        height={720}
+                                        src={img.url}
+                                        alt={img.name}
+                                    />
+                                ): null}
+                            </CarouselItem>
+                        )
+                    })
+                )}
+            </CarouselContent>
+            <div className="flex overflow-clip gap-4 py-2">
+                {variants.map((variant) => 
+                    variant.productType === selectedColor && variant.variantImages.map((img, index) => {
+                        return(
+                            <div key={img.id}>
+                                {img.url ? (
+                                    <Image
+                                        onClick={() => updatePreview(index)}
+                                        priority
+                                        className={cn(index === activeThumbnail[0] ? "opacity-100" : "opacity-75", "rounded-md transition-all duration-300 ease-in-out cursor-pointer hover:opacity-75")}
+                                        width={72}
+                                        height={48}
+                                        src={img.url}
+                                        alt={img.name}
+                                    />
+                                ): null}
+                            </div>
+                        )
+                    })
+                )}
+            </div>
+        </Carousel>
+    )
+}
