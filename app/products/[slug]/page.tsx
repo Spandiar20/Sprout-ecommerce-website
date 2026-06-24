@@ -6,6 +6,7 @@ import { db } from "@/server";
 import { productVariants } from "@/server/schema";
 import { eq } from "drizzle-orm";
 import ProductShowCase from "@/components/products/product-showcase";
+import Reviews from "@/components/reviews/review";
 
 export async function generateStaticParams() {
     const data = await db.query.productVariants.findMany({
@@ -64,11 +65,12 @@ export default async function Page({ params }: {params: { slug: string}}) {
                                 price={variant.product.price}
                                 title={variant.product.title}
                                 image={prodVariant.variantImages[0].url}
-                                 />
+                                />
                             ))}
                         </div>
                     </div>
                 </section>
+                <Reviews productID={variant.productID}></Reviews>
             </main>
         )
     }

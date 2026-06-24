@@ -25,6 +25,9 @@ import { useSearchParams } from "next/navigation"
 import { reviewSchema } from "@/types/reviews-schema"
 import { Star } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useAction } from "next-safe-action/hooks"
+import { addReview } from "@/server/actions/add-review"
+import { toast } from "sonner"
 
 export default function ReviewsForm() {
     const params = useSearchParams()
@@ -35,21 +38,35 @@ export default function ReviewsForm() {
         defaultValues: {
             rating: 0,
             comment: '',
+            productID,
+        }
+    })
+
+    const {execute, status} = useAction(addReview, {
+        onSuccess({data}){
+            if(data.error) toast.error(data.error)
+            if(data.success) {
+                toast.success("Review Added!")
+                form.reset()
+            }
+
         }
     })
 
     function onSubmit(values: z.infer<typeof reviewSchema>) {
-        console.log(values)
+        execute({
+            comment: values.comment,
+            rating: values.rating,
+            productID,
+        })
     }
 
     return(
         <Popover>
-            <PopoverTrigger>
-                <div className="w-full">
-                    <Button className="font-medium w-full" variant={"secondary"}>
-                        Leave a review
-                    </Button>
-                </div>
+            <PopoverTrigger asChild>
+                <Button className="font-medium w-full" variant={"secondary"}>
+                    Leave a review
+                </Button>
             </PopoverTrigger>
             <PopoverContent>
                 <Form {...form}>
@@ -62,6 +79,7 @@ export default function ReviewsForm() {
 
                                     </Textarea>
                                 </FormControl>
+                                <FormMessage></FormMessage>
                             </FormItem>
                         )} />
                         <FormField control={form.control} name="comment" render={({field}) => (
@@ -73,13 +91,15 @@ export default function ReviewsForm() {
                                 <div className="flex">
                                     {[1,2,3,4,5].map((value) => {
                                         return(
-                                            <motion.div key={value} className="relative cursor-pointer" whileTap={{ scale: 0.8}} whileHover={{ scale: 1.2 }}>
+                                            <motion.div key={value} className="relative cursor-pointer" whileTap={{ scale: 0.9}} whileHover={{ scale: 1.1 }}>
                                                 <Star 
                                                     key={value} 
                                                     onClick={() => {
-                                                        form.setValue("rating", value)
+                                                        form.setValue("rating", value, {
+                                                            shouldValidate: true,
+                                                        })
                                                     }} 
-                                                    className={cn("text-primary bg-transparent transition-all duration-300 ease-in-out", form.getValues("rating") >= value ? "text-primary" : "text-muted")}
+                                                    className={cn("text-primary bg-transparent transition-all duration-300 ease-in-out", form.getValues("rating") >= value ? "fill-primary" : "fill-muted")}
                                                     />
                                             </motion.div>
                                         )
@@ -88,10 +108,8 @@ export default function ReviewsForm() {
                             </FormItem>
                         )} />
 
-                        
-
-                        <Button className="w-full" type="submit">
-                            Add Review
+                        <Button className="w-full" type="submit" disabled={status === "executing"}>
+                            {status === 'executing' ? "Adding Review...": 'Add Review'}
                         </Button>
                     </form>
                 </Form>
