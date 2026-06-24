@@ -42,6 +42,8 @@ export default function ReviewsForm() {
         }
     })
 
+    const rating = form.watch("rating")
+
     const {execute, status} = useAction(addReview, {
         onSuccess({data}){
             if(data.error) toast.error(data.error)
@@ -82,7 +84,7 @@ export default function ReviewsForm() {
                                 <FormMessage></FormMessage>
                             </FormItem>
                         )} />
-                        <FormField control={form.control} name="comment" render={({field}) => (
+                        <FormField control={form.control} name="rating" render={({field}) => (
                             <FormItem>
                                 <FormLabel>Leave your rating</FormLabel>
                                 <FormControl>
@@ -99,7 +101,7 @@ export default function ReviewsForm() {
                                                             shouldValidate: true,
                                                         })
                                                     }} 
-                                                    className={cn("text-primary bg-transparent transition-all duration-300 ease-in-out", form.getValues("rating") >= value ? "fill-primary" : "fill-muted")}
+                                                    className={cn("text-primary bg-transparent transition-all duration-300 ease-in-out", rating >= value ? "fill-primary" : "fill-muted")}
                                                     />
                                             </motion.div>
                                         )

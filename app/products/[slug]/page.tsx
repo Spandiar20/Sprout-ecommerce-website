@@ -6,7 +6,7 @@ import { db } from "@/server";
 import { productVariants } from "@/server/schema";
 import { eq } from "drizzle-orm";
 import ProductShowCase from "@/components/products/product-showcase";
-import Reviews from "@/components/reviews/review";
+import Reviews from "@/components/reviews/reviews";
 
 export async function generateStaticParams() {
     const data = await db.query.productVariants.findMany({
