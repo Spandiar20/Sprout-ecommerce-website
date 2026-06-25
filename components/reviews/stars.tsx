@@ -19,7 +19,9 @@ export default function Stars({rating, totalReviews, size = 14}: {
                 )}
                 />
             ))}
-            <span className="text-secondary-foreground font-bold text-sm ml-2">{totalReviews} Reviews</span>
+            {totalReviews && (
+                <span className="text-secondary-foreground font-bold text-sm ml-2">{totalReviews} Reviews</span>
+            )}
         </div>
     )
 }

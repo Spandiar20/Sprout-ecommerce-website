@@ -4,7 +4,7 @@ import { ReviewsWithUser } from "@/lib/infer-type"
 import { Card } from "../ui/card"
 import Image from "next/image"
 import {formatDistance, subDays} from "date-fns"
-import Stars from "./starts"
+import Stars from "./stars"
 
 export default function Review({reviews}: {reviews: ReviewsWithUser[]}) {
     return (

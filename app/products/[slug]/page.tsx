@@ -7,6 +7,8 @@ import { productVariants } from "@/server/schema";
 import { eq } from "drizzle-orm";
 import ProductShowCase from "@/components/products/product-showcase";
 import Reviews from "@/components/reviews/reviews";
+import { getReviewAverage } from "@/lib/review-average";
+import Stars from "@/components/reviews/stars";
 
 export async function generateStaticParams() {
     const data = await db.query.productVariants.findMany({
@@ -30,13 +32,17 @@ export default async function Page({ params }: {params: { slug: string}}) {
         where: eq(productVariants.id, Number(params.slug)),
         with: { 
             product: { 
-                with: {productVariants: 
-                    { with: { variantImages: true, variantTags: true }}
+                with: {
+                    reviews: true,
+                    productVariants: { 
+                        with: { variantImages: true, variantTags: true },
+                    }
                 }
             }
         }
     })
     if (variant){
+        const reviewAvg = getReviewAverage(variant?.product.reviews.map((review) => review.rating) || [])
         return(
             <main>
                 <section className="flex flex-col lg:flex-row gap-4 lg:gap-12">
@@ -47,6 +53,7 @@ export default async function Page({ params }: {params: { slug: string}}) {
                         <h2 className="font-bold text-2xl">{variant?.product.title}</h2>
                         <div>
                             <ProductType variants={variant?.product.productVariants}></ProductType>
+                            <Stars rating={reviewAvg} totalReviews={variant.product.reviews.length}></Stars>
                         </div>
                         <Separator className="my-2"/>
                         <p className="text-2xl font-medium py-2">
