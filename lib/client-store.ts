@@ -7,10 +7,11 @@ export type Variant = {
 
 export type CartItem = {
     name: string,
-    img: string,
+    image: string,
     id: number, 
     variant: Variant,
     price: number,
+
 }
 
 export type CartState = {
